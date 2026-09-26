@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import time
+import csv
 
 all_quotes = []
 
@@ -19,8 +20,7 @@ while url:
         author = div.find("small", class_="author").text
         tags = div.find_all("a", class_="tag")
         tag_list = [tag.text for tag in tags]
-        line = f"{author}: {text} | Теги: {', '.join(tag_list)}"
-        all_quotes.append(line)
+        all_quotes.append([author, text, ", ".join(tag_list)])
 
     print(f"Найдено цитат на странице: {len(quotes_divs)}")
 
@@ -34,9 +34,12 @@ while url:
 
     time.sleep(1)
 
-with open("quotes.txt", "w", encoding="utf-8") as file:
-    for line in all_quotes:
-        file.write(line + "\n")
+with open("quotes.csv", "w", encoding="utf-8", newline="") as file:
+    writer = csv.writer(file)
+    writer.writerow(["Автор", "Цитата", "Теги"])
+    for quote in all_quotes:
+        writer.writerow(quote)
+
 
 print(f"Готово! Собрано цитат: {len(all_quotes)}")
 
